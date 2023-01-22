@@ -1,35 +1,71 @@
 package com.softwaretesting.Module;
 
 import com.softwaretesting.components.Driver;
-import java.util.regex.Pattern;
+import com.softwaretesting.components.TestCase;
 import java.util.ArrayList;
 
 public class AddRecord extends Driver {
-    private final Pattern EMAIL_REGEX = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",
-            Pattern.CASE_INSENSITIVE);
-    private final Pattern PHONE_REGEX = Pattern.compile("\\d{10}|(?:\\d{3}-){2}\\d{4}|\\(\\d{3}\\)\\d{3}-?\\d{4}",
-            Pattern.CASE_INSENSITIVE);
-    private ArrayList<String> formList = new ArrayList<String>();
+    private ArrayList<TestCase> testCases = new ArrayList<TestCase>();
 
     public AddRecord() {
         super();
     }
 
-    public void fillForm(String firstName, String lastName, String gender, String birthDate, String emailOrPhone,
-            String password) {
-        super.setInputForm("FirstName", firstName);
-        super.setInputForm("LastName", lastName);
-        super.setSelectForm("Gender", gender);
-        super.setInputForm("birthdate", birthDate);
-        super.setInputForm("EmailOrPhone", emailOrPhone);
-        super.setInputForm("CreatePassword", password);
+    public void start() {
+        login();
+        goToForm();
+    }
 
-        formList.add(firstName);
-        formList.add(lastName);
-        formList.add(gender);
-        formList.add(birthDate);
-        formList.add(emailOrPhone);
-        formList.add(password);
+    private void goToForm() {
+        super.navigate("https://www.oneplustwo.my/account/addresses");
+        super.clickButtonByXpath("//*[@id=\"PageContainer\"]/main/div/div/div[1]/div/a");
+    }
+
+    private void login() {
+        super.setInputForm("CustomerEmail", "haziq.musa02@gmail.com");
+        super.setInputForm("CustomerPassword", "haziq2702");
+        super.clickButtonByXpath("//*[@id=\"CustomerLoginForm\"]/form/div/input");
+    }
+
+    public void fillForm(String testName, String firstName, String lastName, String phone, String address, String city,
+            String zipCode, boolean expected) {
+        super.setInputForm("AddressFirstNameNew", firstName);
+        super.setInputForm("AddressLastNameNew", lastName);
+        super.setInputForm("AddressPhoneNew", phone);
+        super.setInputForm("AddressAddress1New", address);
+        // country & province
+        super.setSelectForm("AddressCountryNew", "MY");
+        super.setSelectForm("AddressProvinceNew", "MY-11");
+        super.setInputForm("AddressCityNew", city);
+        super.setInputForm("AddressZipNew", zipCode);
+        super.clickButtonByXpath("//*[@id=\"address_form_new\"]/div/p[2]/input");
+
+        checkError(testName, expected);
+        goToForm();
+    }
+
+    public void fillForm(String testName, boolean expected) {
+        // country & province
+        super.setSelectForm("AddressCountryNew", "MY");
+        super.setSelectForm("AddressProvinceNew", "MY-11");
+        super.clickButtonByXpath("//*[@id=\"address_form_new\"]/div/p[2]/input");
+
+        checkError(testName, expected);
+        goToForm();
+    }
+
+    private void checkError(String testName, boolean expected) {
+        // check if element exits then asign the result
+        try {
+            super.findByXpath("//*[@id=\"address_form_new\"]/div/ul").isDisplayed();
+            testCases.add(new TestCase(testName, true));
+        } catch (Exception e) {
+            if (!expected) {
+                testCases.add(new TestCase(testName, false));
+            } else {
+                testCases.add(new TestCase(testName, true));
+            }
+        }
     }
 
     public boolean requiredField(String formValue) {
@@ -39,28 +75,9 @@ public class AddRecord extends Driver {
         return true;
     }
 
-    private boolean matchRegex(Pattern regex, String formValue) {
-        return regex.matcher(formValue).find();
-    }
-
-    public boolean checkEmail(String id) {
-        boolean email = matchRegex(EMAIL_REGEX, id);
-        boolean phone = matchRegex(PHONE_REGEX, id);
-
-        if (email == false && phone == false)
-            return false;
-
-        return true;
-    }
-
-    public void testResult() {
-        for (int i = 0; i < formList.size(); i++) {
-            if (i == 4) {
-                System.out
-                        .println("Value 5: " + (checkEmail(formList.get(i)) && requiredField(formList.get(i))));
-            } else {
-                System.out.println("Value " + (i + 1) + ": " + requiredField(null));
-            }
+    public void viewTest() {
+        for (int i = 0; i < testCases.size(); i++) {
+            System.out.println(testCases.get(i).getTestResult());
         }
     }
 }
