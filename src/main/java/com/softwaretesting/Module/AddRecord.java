@@ -17,13 +17,13 @@ public class AddRecord extends Driver {
     }
 
     private void goToForm() {
-        super.navigate("https://www.oneplustwo.my/account/addresses");
+        super.navigate(System.getenv("LINK_2"));
         super.clickButtonByXpath("//*[@id=\"PageContainer\"]/main/div/div/div[1]/div/a");
     }
 
     private void login() {
-        super.setInputForm("CustomerEmail", "haziq.musa02@gmail.com");
-        super.setInputForm("CustomerPassword", "haziq2702");
+        super.setInputForm("CustomerEmail", System.getenv("EMAIL"));
+        super.setInputForm("CustomerPassword", System.getenv("PASSWORD"));
         super.clickButtonByXpath("//*[@id=\"CustomerLoginForm\"]/form/div/input");
     }
 
@@ -38,16 +38,6 @@ public class AddRecord extends Driver {
         super.setSelectForm("AddressProvinceNew", "MY-11");
         super.setInputForm("AddressCityNew", city);
         super.setInputForm("AddressZipNew", zipCode);
-        super.clickButtonByXpath("//*[@id=\"address_form_new\"]/div/p[2]/input");
-
-        checkError(testName, expected);
-        goToForm();
-    }
-
-    public void fillForm(String testName, boolean expected) {
-        // country & province
-        super.setSelectForm("AddressCountryNew", "MY");
-        super.setSelectForm("AddressProvinceNew", "MY-11");
         super.clickButtonByXpath("//*[@id=\"address_form_new\"]/div/p[2]/input");
 
         checkError(testName, expected);
