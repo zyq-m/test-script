@@ -38,9 +38,21 @@ public class AddRecord extends Driver {
         super.setSelectForm("AddressProvinceNew", "MY-11");
         super.setInputForm("AddressCityNew", city);
         super.setInputForm("AddressZipNew", zipCode);
+
+        try {
+            Thread.sleep(800);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         super.clickButtonByXpath("//*[@id=\"address_form_new\"]/div/p[2]/input");
 
         checkError(testName, expected);
+        try {
+            Thread.sleep(800);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         goToForm();
     }
 
